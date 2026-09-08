@@ -57,7 +57,7 @@ const deleteTask = (req, res) => {
     res.json({ message: 'Task deleted successfully' });
 };
 
-// Export all functions
+
 export default {
     getAllTasks,
     getTaskById,
