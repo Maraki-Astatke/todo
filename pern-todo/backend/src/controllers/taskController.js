@@ -5,7 +5,6 @@ const getAllTasks = (req, res) => {
     const tasks = taskModel.getAllTasks();
     res.json(tasks);
 };
-
 const getTaskById = (req, res) => {
     const id = parseInt(req.params.id);
     const task = taskModel.getTaskById(id);
