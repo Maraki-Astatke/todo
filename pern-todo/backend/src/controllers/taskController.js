@@ -16,45 +16,11 @@ const getTaskById = (req, res) => {
     res.json(task);
 };
 
-
-// Create a new task
 const createTask = (req, res) => {
-    const { title } = req.body;
-
-    if (!title) {
-        return res.status(400).json({ error: 'Title is required' });
-    }
-
-    const newTask = taskModel.createTask(title);
-    res.status(201).json(newTask);
-};
-
-// Update a task
-const updateTask = (req, res) => {
-    const id = parseInt(req.params.id);
-    const { title, completed } = req.body;
-
-    const updatedTask = taskModel.updateTask(id, { title, completed });
-
-    if (!updatedTask) {
-        return res.status(404).json({ error: 'Task not found' });
-    }
-
-    res.json(updatedTask);
-};
-
-// Delete a task
-const deleteTask = (req, res) => {
-    const id = parseInt(req.params.id);
-
-    const deletedTask = taskModel.deleteTask(id);
-
-    if (!deletedTask) {
-        return res.status(404).json({ error: 'Task not found' });
-    }
-
-    res.json({ message: 'Task deleted successfully' });
-};
+    const newTask = req.body;
+    const createdTask = taskModel.createTask(newTask);
+    res.status(201).json(createdTask);
+}
 
 
 export default {
@@ -64,3 +30,9 @@ export default {
     updateTask,
     deleteTask
 };
+
+
+
+
+
+
