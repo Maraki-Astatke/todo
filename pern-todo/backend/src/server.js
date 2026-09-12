@@ -1,6 +1,9 @@
 import express from "express";
 import cors from 'cors';
-import taskRoutes from './routes/taskRoutes.js'; 1
+import taskRoutes from './routes/taskRoutes.js'; 
+import './config/database.js'; 
+
+
 
 const app = express();
 const PORT = 5001;
