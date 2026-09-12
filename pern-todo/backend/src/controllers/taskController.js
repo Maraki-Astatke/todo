@@ -22,6 +22,12 @@ const createTask = (req, res) => {
     res.status(201).json(createdTask);
 }
 
+const updateTask = (req,res) =>{
+    const { id } = req.params;
+    const updatedTask = req.body;
+    const task = taskModel.updateTask(id, updatedTask);
+    res.json(task);
+}
 
 export default {
     getAllTasks,
@@ -30,6 +36,7 @@ export default {
     updateTask,
     deleteTask
 };
+
 
 
 

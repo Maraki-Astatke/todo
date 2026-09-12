@@ -18,7 +18,14 @@ const createTask = (task) => {
     return newTask;
 }
 
-
+const updateTask = (id, updatedTask) => {
+    const taskIndex = tasks.findIndex(t => t.id === parseInt(id));
+    if (taskIndex === -1) {
+        return null;
+    }
+    tasks[taskIndex] = { ...tasks[taskIndex], ...updatedTask };
+    return tasks[taskIndex];
+}
 export default {
     getAllTasks,
     getTaskById,
