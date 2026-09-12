@@ -12,7 +12,11 @@ const getAllTasks = () => tasks;
 // Get task by ID   
 const getTaskById = (id) => tasks.find(t => t.id === id);
 
-
+const createTask = (task) => {
+    const newTask = { id: nextId++, ...task };
+    tasks.push(newTask);
+    return newTask;
+}
 
 
 export default {
