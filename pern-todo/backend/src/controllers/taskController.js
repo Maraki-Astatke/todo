@@ -29,6 +29,12 @@ const updateTask = (req,res) =>{
     res.json(task);
 }
 
+const deleteTask = (req,res) =>{
+    const { id } = req.params;
+    taskModel.deleteTask(id);
+    res.status(204).send();
+}
+
 export default {
     getAllTasks,
     getTaskById,
@@ -36,7 +42,6 @@ export default {
     updateTask,
     deleteTask
 };
-
 
 
 

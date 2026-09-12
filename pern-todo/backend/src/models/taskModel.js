@@ -26,6 +26,16 @@ const updateTask = (id, updatedTask) => {
     tasks[taskIndex] = { ...tasks[taskIndex], ...updatedTask };
     return tasks[taskIndex];
 }
+
+const deleteTask = (id, deleteTask) => {
+    const taskIndex = tasks.findIndex(t => t.id === parseInt(id));
+    if (taskIndex === -1) {
+        return null;
+    }
+    const deletedTask = tasks.splice(taskIndex, 1);
+    return deletedTask[0];
+}
+
 export default {
     getAllTasks,
     getTaskById,
