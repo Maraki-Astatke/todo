@@ -1,44 +1,64 @@
-// Hardcoded tasks for now
-let tasks = [
-    { id: 1, title: 'Learn PERN Stack', completed: false },
-    { id: 2, title: 'Build a To-Do App', completed: false }
-];
+// Import the database connection
+import pool from '../config/database.js';
 
-let nextId = 3;
+// ============ MODEL FUNCTIONS ============
 
-// Get all tasks
-const getAllTasks = () => tasks;
+// 1. Get all tasks from the database
+const getAllTasks = async () => {
+    const result = await pool.query('SELECT * FROM tasks ORDER BY id ASC');
+    return result.rows;
+};
 
-// Get task by ID   
-const getTaskById = (id) => tasks.find(t => t.id === id);
+// 2. Create a new task in the database
+const createTask = async (title) => {
+    const result = await pool.query(
+        'INSERT INTO tasks (title, completed) VALUES ($1, $2) RETURNING *',
+        [title, false]
+    );
+    return result.rows[0];
+};
 
-const createTask = (task) => {
-    const newTask = { id: nextId++, ...task };
-    tasks.push(newTask);
-    return newTask;
-}
-
-const updateTask = (id, updatedTask) => {
-    const taskIndex = tasks.findIndex(t => t.id === parseInt(id));
-    if (taskIndex === -1) {
-        return null;
+// 3. Update a task in the database
+const updateTask = async (id, updates) => {
+    // First, get the current task
+    const currentResult = await pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
+    
+    if (currentResult.rows.length === 0) {
+        return null; // Task not found
     }
-    tasks[taskIndex] = { ...tasks[taskIndex], ...updatedTask };
-    return tasks[taskIndex];
-}
+    
+    const currentTask = currentResult.rows[0];
+    
+    // Use existing values if not provided in updates
+    const newTitle = updates.title !== undefined ? updates.title : currentTask.title;
+    const newCompleted = updates.completed !== undefined ? updates.completed : currentTask.completed;
+    
+    // Update the task
+    const result = await pool.query(
+        'UPDATE tasks SET title = $1, completed = $2 WHERE id = $3 RETURNING *',
+        [newTitle, newCompleted, id]
+    );
+    
+    return result.rows[0];
+};
 
-const deleteTask = (id, deleteTask) => {
-    const taskIndex = tasks.findIndex(t => t.id === parseInt(id));
-    if (taskIndex === -1) {
-        return null;
+// 4. Delete a task from the database
+const deleteTask = async (id) => {
+    const result = await pool.query(
+        'DELETE FROM tasks WHERE id = $1 RETURNING *',
+        [id]
+    );
+    
+    if (result.rows.length === 0) {
+        return null; // Task not found
     }
-    const deletedTask = tasks.splice(taskIndex, 1);
-    return deletedTask[0];
-}
+    
+    return result.rows[0];
+};
 
+// ============ EXPORT ALL FUNCTIONS ============
 export default {
     getAllTasks,
-    getTaskById,
     createTask,
     updateTask,
     deleteTask
