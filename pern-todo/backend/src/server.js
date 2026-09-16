@@ -1,12 +1,14 @@
 import express from "express";
 import cors from 'cors';
 import taskRoutes from './routes/taskRoutes.js'; 
-import './config/database.js'; 
+import './config/database.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 
 const app = express();
-const PORT = 5001;
+const PORT = process.env.PORT ;
 
 app.use(cors())
 
