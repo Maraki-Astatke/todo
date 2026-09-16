@@ -12,7 +12,7 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD, // ← No quotes!
     host: process.env.DB_HOST,         // ← No quotes!
     port: process.env.DB_PORT,         // ← No quotes!
-    database: process.env.DB_NAME      // ← No quotes!
+    database: process.env.DB_NAME      
 });
 
 // Test the connection
