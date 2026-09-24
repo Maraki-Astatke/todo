@@ -1,89 +1,100 @@
-import taskModel from '../models/taskModel.js';
+// models/taskModel.js
+import fs from 'fs/promises';
+import path from 'path';
 
-// Get all tasks
-const getAllTasks = async (req, res) => {
+const DATA_FILE = path.join(process.cwd(), 'data', 'tasks.json');
+
+// ---------- helpers ----------
+const readTasks = async () => {
     try {
-        const tasks = await taskModel.getAllTasks();
-        res.status(200).json(tasks);
+        const data = await fs.readFile(DATA_FILE, 'utf-8');
+        return JSON.parse(data);
     } catch (error) {
-        console.error('Error fetching tasks:', error);
-        res.status(500).json({ error: error.message });
+        // if file doesn't exist yet, start with empty array
+        if (error.code === 'ENOENT') return [];
+        throw error;
     }
 };
 
-// Get task by ID
-const getTaskById = async (req, res) => {
-    try {
-        const id = parseInt(req.params.id);
-        const task = await taskModel.getTaskById(id);
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-
-        res.status(200).json(task);
-    } catch (error) {
-        console.error('Error fetching task:', error);
-        res.status(500).json({ error: error.message });
-    }
+const writeTasks = async (tasks) => {
+    await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
+    await fs.writeFile(DATA_FILE, JSON.stringify(tasks, null, 2), 'utf-8');
 };
 
-
-// Create a new task
-const createTask = async (req, res) => {
-    try {
-        const { title } = req.body;
-
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required!' });
-        }
-
-        const createdTask = await taskModel.createTask(title);
-        res.status(201).json(createdTask);
-    } catch (error) {
-        console.error('Error creating task:', error);
-        res.status(500).json({ error: error.message });
-    }
+// ---------- CRUD operations ----------
+const getAllTasks = async () => {
+    return await readTasks();
 };
 
-// Update a task
-const updateTask = async (req, res) => {
-    try {
-        const id = parseInt(req.params.id);
-        const { title, completed } = req.body;
-
-        const updatedTask = await taskModel.updateTask(id, { title, completed });
-
-        if (!updatedTask) {
-            return res.status(404).json({ error: `Task with ID ${id} not found` });
-        }
-
-        res.status(200).json(updatedTask);
-    } catch (error) {
-        console.error('Error updating task:', error);
-        res.status(500).json({ error: error.message });
-    }
+const getTaskById = async (id) => {
+    const tasks = await readTasks();
+    return tasks.find((task) => task.id === id) || null;
 };
 
-// Delete a task
-const deleteTask = async (req, res) => {
-    try {
-        const id = parseInt(req.params.id);
+const createTask = async (title) => {
+    const tasks = await readTasks();
 
-        const deletedTask = await taskModel.deleteTask(id);
+    // generate next numeric id
+    const nextId = tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1;
 
-        if (!deletedTask) {
-            return res.status(404).json({ error: `Task with ID ${id} not found` });
-        }
+    const newTask = {
+        id: nextId,
+        title: title.trim(),
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    };
 
-        res.status(200).json({ 
-            message: `Task "${deletedTask.title}" deleted successfully!`,
-            task: deletedTask 
-        });
-    } catch (error) {
-        console.error('Error deleting task:', error);
-        res.status(500).json({ error: error.message });
-    }
+    tasks.push(newTask);
+    await writeTasks(tasks);
+    return newTask;
+};
+
+const updateTask = async (id, updates) => {
+    const tasks = await readTasks();
+    const index = tasks.findIndex((task) => task.id === id);
+
+    if (index === -1) return null;
+
+    const { title, completed } = updates;
+
+    // only update fields that were provided
+    if (title !== undefined) tasks[index].title = title.trim();
+    if (completed !== undefined) tasks[index].completed = completed;
+
+    tasks[index].updatedAt = new Date().toISOString();
+
+    await writeTasks(tasks);
+    return tasks[index];
+};
+
+const deleteTask = async (id) => {
+    const tasks = await readTasks();
+    const index = tasks.findIndex((task) => task.id === id);
+
+    if (index === -1) return null;
+
+    const [deleted] = tasks.splice(index, 1);
+    await writeTasks(tasks);
+    return deleted;
+};
+
+// ---------- extra helpers (bonus) ----------
+const toggleTask = async (id) => {
+    const tasks = await readTasks();
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return null;
+
+    task.completed = !task.completed;
+    task.updatedAt = new Date().toISOString();
+
+    await writeTasks(tasks);
+    return task;
+};
+
+const getTasksByStatus = async (completed) => {
+    const tasks = await readTasks();
+    return tasks.filter((task) => task.completed === completed);
 };
 
 export default {
@@ -91,5 +102,7 @@ export default {
     getTaskById,
     createTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    toggleTask,
+    getTasksByStatus,
 };
