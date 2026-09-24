@@ -28,7 +28,7 @@ function TaskItem({ task, onToggle, onDelete, onEdit }) {
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => onToggle(task.id, task.completed)}
-                className="w-5 h-5 cursor-pointer accent-blue-600"
+                className="w-15 h-5 cursor-pointer accent-blue-600"
             />
 
             {isEditing ? (
@@ -43,11 +43,10 @@ function TaskItem({ task, onToggle, onDelete, onEdit }) {
                 />
             ) : (
                 <span
-                    className={`flex-1 text-base transition-all duration-200 ${
-                        task.completed
-                            ? 'line-through text-gray-400'
-                            : 'text-gray-800'
-                    }`}
+                    className={`flex-1 text-base transition-all duration-200 ${task.completed
+                        ? 'line-through text-gray-400'
+                        : 'text-gray-800'
+                        }`}
                 >
                     {task.title}
                 </span>
@@ -68,7 +67,7 @@ function TaskItem({ task, onToggle, onDelete, onEdit }) {
                         onClick={handleCancel}
                         className="w-8 h-8 flex items-center justify-center 
                                    bg-gray-400 text-white rounded-md 
-                                   hover:bg-gray-500 transition-colors text-sm font-bold"
+                                   hover:bg-gray-600 transition-colors text-sm font-bold"
                         aria-label="Cancel"
                     >
                         ✕
@@ -92,7 +91,7 @@ function TaskItem({ task, onToggle, onDelete, onEdit }) {
                                    hover:bg-red-600 transition-colors text-sm font-bold"
                         aria-label="Delete"
                     >
-                        ✕
+                        X
                     </button>
                 </>
             )}

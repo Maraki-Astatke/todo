@@ -6,7 +6,7 @@ function TaskForm({ onAdd }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!title.trim()) return;
-        
+
         onAdd(title);
         setTitle('');
     };
@@ -29,7 +29,7 @@ function TaskForm({ onAdd }) {
                            transition-colors duration-200 
                            disabled:opacity-50"
             >
-                Add
+                Add +
             </button>
         </form>
     );
