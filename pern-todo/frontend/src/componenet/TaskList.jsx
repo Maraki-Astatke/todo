@@ -3,7 +3,7 @@ import TaskItem from './TaskItem.jsx';
 function TaskList({ tasks, onToggle, onDelete, onEdit }) {
     if (tasks.length === 0) {
         return (
-            <p className="text-center text-gray-400 py-12 text-base">
+            <p className="text-center font-3 text-gray-400 py-12 text-base">
                 No tasks yet. Add one above! ☝️
             </p>
         );
